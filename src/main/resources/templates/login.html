@@ -27,15 +27,15 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Войти</button>
             </form>
-            <form th:action="@{/register}" class="login_form">
+            <form th:action="@{/register}" method="post" class="login_form">
                 <h3>Регистрация</h3>
                 <div class="mb-3">
                     <label for="register-login" class="form-label">Логин</label>
-                    <input type="text" class="form-control" id="register-login">
+                    <input type="text" class="form-control" id="register-login" name="reglog">
                 </div>
                 <div class="mb-3">
                     <label for="register-password" class="form-label">Пароль</label>
-                    <input type="password" class="form-control" id="register-password">
+                    <input type="password" class="form-control" id="register-password" name="regpass">
                 </div>
                 <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
             </form>

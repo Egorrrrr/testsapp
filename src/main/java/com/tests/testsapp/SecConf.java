@@ -24,7 +24,7 @@ public class SecConf extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests().antMatchers("/login").permitAll()
-                .anyRequest().authenticated()
+                .antMatchers("/home").authenticated()
                 .and()
                 .formLogin().loginPage("/login").defaultSuccessUrl("/home", true).permitAll();
     }
