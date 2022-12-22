@@ -3,8 +3,14 @@ package com.tests.testsapp;
 import com.tests.testsapp.services.AppUserDetailService;
 import com.tests.testsapp.services.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.BeanIds;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +23,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
     @Autowired
     AppUserDetailService appUserDetailService;
-
+    @Autowired
+    AuthenticationManager authenticationManager;
 
     private boolean isAuthenticated() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -38,8 +45,17 @@ public class LoginController {
 
     @PostMapping(value = {"/register"})
     public String register(@RequestParam("reglog") String username,@RequestParam("regpass") String password ) {
-        appUserDetailService.makeNewUser(username, password);
-        return "redirect:home";
+        if(appUserDetailService.makeNewUser(username, password)){
+            UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
+
+            Authentication authentication = authenticationManager.authenticate(authRequest);
+            SecurityContext securityContext = SecurityContextHolder.getContext();
+            securityContext.setAuthentication(authentication);
+
+            return "redirect:home";
+        }
+        return "Username already exists";
+
     }
 
 
