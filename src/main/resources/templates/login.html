@@ -9,7 +9,7 @@
 <body>
     <div class="position-fixed d-flex justify-content-center w-100 h-100 bg-dark align-items-center">
         <div class="position-relative bg-light d-flex gap-5 p-4 rounded" style="top: -40px">
-            <form th:action="@{/login}" class="" method="post">
+            <form th:action="@{/login}" class="w-50" method="post">
                 <h3>Логин</h3>
                 <div class="mb-3">
                     <label for="username" class="form-label">Логин</label>
@@ -20,14 +20,14 @@
                     <input type="password" class="form-control" id="password" name="password">
                 </div>
                 <div th:if="${param.error}" class="alert alert-danger">
-                    Invalid username and password.
+                    Неверный логин или пароль
                 </div>
                 <div th:if="${param.logout}" class="alert alert-success">
-                    You have been logged out.
+                    Вы вышли.
                 </div>
                 <button type="submit" class="btn btn-primary">Войти</button>
             </form>
-            <form th:action="@{/register}" method="post" class="login_form">
+            <form th:action="@{/register}" method="post" class="login_form w-50">
                 <h3>Регистрация</h3>
                 <div class="mb-3">
                     <label for="register-login" class="form-label">Логин</label>
@@ -37,18 +37,18 @@
                     <label for="register-password" class="form-label">Пароль</label>
                     <input type="password" class="form-control" id="register-password" name="regpass">
                 </div>
-
                 <div th:if="${param.valid_error}" class="alert alert-danger">
-                    Bad login or password
+                    Логин и пароль должны быть длиннее 4 символов
                 </div>
-
                 <div th:if="${param.uniq_error}" class="alert alert-danger">
-                    The login already exists
+                    Такой логин уже есть
                 </div>
-
                 <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
             </form>
         </div>
     </div>
 </body>
+<script>
+
+</script>
 </html>

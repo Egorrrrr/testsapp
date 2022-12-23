@@ -45,6 +45,9 @@ public class LoginController {
 
     @PostMapping(value = {"/register"})
     public String register(@RequestParam("reglog") String username,@RequestParam("regpass") String password ) {
+        if(username.trim().length() < 5 || password.trim().length() < 5) {
+            return "redirect:login?valid_error";
+        }
         if(appUserDetailService.makeNewUser(username, password)){
             UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username, password);
 
@@ -54,7 +57,7 @@ public class LoginController {
 
             return "redirect:home";
         }
-        return "Username already exists";
+        return "redirect:login?uniq_error";
 
     }
 
