@@ -24,37 +24,58 @@
         <div class="col-sm-4">
           <label for="testName" class="form-label">Название теста</label>
           <input type="text" class="form-control mb-2" placeholder="Введите название теста" id="testName">
-
           <button type="submit" class="btn btn-primary w-100 mb-2">Создать тест</button>
-
           <button th:href="@{/admin}" class="btn btn-danger w-100">Отмена</button>
         </div>
         <div class="col-sm-8 d-flex align-items-center flex-column" style="gap: 5px">
-          <div class="w-100" style="padding-left: 20px">
-            <div class="card w-100 p-3 d-flex direction-column" th:fragment="new-question" style="gap:5px">
+          <div class="w-100 d-flex flex-column" style="padding-left: 20px; gap: 5px" id="allQuestions">
+            <div class="card w-100 p-3 d-flex flex-column" style="gap:5px" id="newQuestion">
               <div>
                 <label class="form-label m-0">Название теста</label>
                 <input type="text" class="form-control" placeholder="Введите название теста">
               </div>
               <div>
                 <label class="form-label m-0">Тип вопроса</label>
-                <select class="form-control">
-                  <option th:each="type: ${questionTypes}" th:utext="${type.name}" th:value="${type.value}"></option>
+                <select class="form-control" onchange="selectType(this)">
+                  <option th:each="type: ${questionTypes}" th:utext="${type.label}" th:value="${type.value}">
+
+                  </option>
                 </select>
-
-                <div th:insert="">
-                  <!--ТУТ ТИПА В ЗАВИСИМОСТИ ОТ ТИПА ВОПРОСА-->
-                </div>
-
               </div>
             </div>
           </div>
-          <button class="btn btn-primary">+</button>
-          <!--ОНО ДОЛЖНО ДОБАВЛЯТЬ ВОПРОС-->
+          <button class="btn btn-primary" id="addQuestion">+</button>
         </div>
       </form>
     </div>
   </div>
 </div>
+<script>
+  document.getElementById('addQuestion').onclick = (e) => {
+    e.preventDefault()
+    document.getElementById("allQuestions").appendChild(
+      document.getElementById("newQuestion").cloneNode(true)
+    )
+  }
+
+  const selectType = (e) => {
+    fetch('/getType', {
+      method: 'POST',
+      body: JSON.stringify({
+        type: e.value
+      }),
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    }).then(response => {
+      return response.text()
+    })
+    .then(data => {
+      const child = document.createElement('div')
+      child.innerHTML = data
+      e.parentNode.parentNode.append(child)
+    })
+  }
+</script>
 </body>
 </html>
