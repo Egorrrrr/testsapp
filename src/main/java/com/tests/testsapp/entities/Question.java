@@ -1,21 +1,40 @@
 package com.tests.testsapp.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.hibernate.annotations.CreationTimestamp;
+
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Question {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String answerContent;
     private String questionText;
+    @Transient
     private String templatePath;
+    @Transient
+    private String constructorPath;
+    private String answerContent;
+    private String type;
 
-    public String getConstructor(){
-        return null;
+    @ManyToMany
+    Set<Question> tests;
+
+    public void setPath(){}
+    public void setConst(){}
+    public boolean check(String answer){return false;}
+
+    public boolean writeToDb(String question) {return false;}
+
+    @Transient
+    public String getConstructorPath() {
+        return constructorPath;
+    }
+    @Transient
+    public void setConstructorPath(String constructorPath) {
+        this.constructorPath = constructorPath;
     }
 
     public String getQuestionText() {
@@ -26,14 +45,6 @@ public abstract class Question {
         this.questionText = questionText;
     }
 
-    public String getAnswerContent() {
-        return answerContent;
-    }
-
-    public void setAnswerContent(String answerContent) {
-        this.answerContent = answerContent;
-    }
-
     public Long getId() {
         return id;
     }
@@ -42,11 +53,29 @@ public abstract class Question {
         this.id = id;
     }
 
+    @Transient
     public String getTemplatePath() {
         return templatePath;
     }
 
+    @Transient
     public void setTemplatePath(String templatePath) {
         this.templatePath = templatePath;
+    }
+
+    public String getAnswerContent() {
+        return answerContent;
+    }
+
+    public void setAnswerContent(String answerContent) {
+        this.answerContent = answerContent;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }
