@@ -11,9 +11,10 @@
     <div class="position-relative bg-light gap-5 p-4 rounded w-75 h-75 overflow-auto" style="padding: 0 !important;">
         <nav class="navbar navbar-light d-flex justify-content-between w-100 px-2 position-sticky">
             <div class="d-flex">
-                <h3 class="m-0" th:text="${username}"></h3>
-                <a th:href="#" class="nav-link nav-item active">Тесты</a>
+                <h3 class="m-0" th:text="${name}"></h3>
+                <a th:href="@{/tests}" class="nav-link nav-item active">Тесты</a>
                 <a th:href="@{/stats}" class="nav-link nav-item">Статистика</a>
+                <a th:href="@{/admin}" class="nav-link nav-item" th:if="'admin' == ${role}">Админ-панель</a>
             </div>
             <form class="form-inline my-2 my-lg-0" th:action="@{/logout}" method="post">
                 <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выйти</button>
