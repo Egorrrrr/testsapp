@@ -2,7 +2,11 @@ package com.tests.testsapp;
 
 import com.tests.testsapp.services.AppUserDetailService;
 import com.tests.testsapp.services.AppUserDetails;
+import netscape.javascript.JSObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -55,8 +59,15 @@ public class HomePageController {
         return "create-test";
     }
 
+    @PostMapping("/upload_test")
+    public String uploadTest(@RequestParam("testName") String testName){
+        return "create-test";
+    }
+
     @RequestMapping(value = "/getType", method = RequestMethod.POST)
-    public String getType(){
+    public String getType(HttpEntity<String> httpEntity) throws JSONException {
+        String type = new JSONObject(httpEntity.getBody()).getString("type");
+
         return "fragments/q1";
     }
 

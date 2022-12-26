@@ -12,7 +12,7 @@
     <nav class="navbar navbar-light d-flex justify-content-between w-100 px-2 position-sticky">
       <div class="d-flex">
         <h3 class="m-0" th:text="${username}"></h3>
-        <a th:href="#" class="nav-link nav-item active">Создание теста</a>
+        <a class="nav-link nav-item active">Создание теста</a>
       </div>
       <form class="form-inline my-2 my-lg-0" th:action="@{/logout}" method="post">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выйти</button>
@@ -20,11 +20,11 @@
     </nav>
     <hr class="m-0">
     <div class="container py-2 row m-0">
-      <form class="container d-flex align-items-start">
+      <form  class="container d-flex align-items-start">
         <div class="col-sm-4">
           <label for="testName" class="form-label">Название теста</label>
-          <input type="text" class="form-control mb-2" placeholder="Введите название теста" id="testName">
-          <button type="submit" class="btn btn-primary w-100 mb-2">Создать тест</button>
+          <input type="text" class="form-control mb-2" placeholder="Введите название теста" id="testName" name="testName">
+          <a onclick="gatherAndSend()" class="btn btn-primary w-100 mb-2">Создать тест</a>
           <button th:href="@{/admin}" class="btn btn-danger w-100">Отмена</button>
         </div>
         <div class="col-sm-8 d-flex align-items-center flex-column" style="gap: 5px">
@@ -32,11 +32,11 @@
             <div class="card w-100 p-3 d-flex flex-column" style="gap:5px" id="newQuestion">
               <div>
                 <label class="form-label m-0">Название теста</label>
-                <input type="text" class="form-control" placeholder="Введите название теста">
+                <input type="text" class="form-control" placeholder="Введите название теста" name="questionContent">
               </div>
               <div>
                 <label class="form-label m-0">Тип вопроса</label>
-                <select class="form-control" onchange="selectType(this)">
+                <select class="form-control" onchange="selectType(this)" name="typeSelector">
                   <option th:each="type: ${questionTypes}" th:utext="${type.label}" th:value="${type.value}">
 
                   </option>
@@ -57,7 +57,21 @@
       document.getElementById("newQuestion").cloneNode(true)
     )
   }
-
+  const gatherAndSend = () =>{
+    var test = {}
+    test['name'] = document.getElementById('testName')
+    var questions = document.getElementById('allQuestions').children
+    test['questions'] = []
+    for (var i = 0; i < questions.length; i++) {
+      var question = questions[i];
+      console.log(question)
+      q_content = question.querySelectorAll('input[name="questionContent"]')[0].value;
+      type = question.querySelectorAll('select[name="typeSelector"]')[0];
+      type = type.options[type.selectedIndex].text;
+      test['questions'].push({'q_content':q_content, 'type':type})
+    }
+    console.log(test)
+  }
   const selectType = (e) => {
     fetch('/getType', {
       method: 'POST',
@@ -73,7 +87,11 @@
     .then(data => {
       const child = document.createElement('div')
       child.innerHTML = data
-      e.parentNode.parentNode.append(child)
+      question = e.parentNode.parentNode
+      if(question.childElementCount > 2){
+        question.removeChild(question.lastChild);
+      }
+      question.append(child)
     })
   }
 </script>

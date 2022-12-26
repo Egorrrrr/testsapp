@@ -12,7 +12,7 @@
     <nav class="navbar navbar-light d-flex justify-content-between w-100 px-2 position-sticky">
       <div class="d-flex">
         <h3 class="m-0" th:text="${username}"></h3>
-        <a class="nav-link nav-item active">Создание теста</a>
+        <a href="#" class="nav-link nav-item active">Создание теста</a>
       </div>
       <form class="form-inline my-2 my-lg-0" th:action="@{/logout}" method="post">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Выйти</button>
@@ -21,7 +21,7 @@
     <hr class="m-0">
     <div class="container py-2 row m-0">
       <div class="col-sm-12 d-flex justify-content-center mb-3">
-        <button th:href="@{/create-test}" class="btn btn-primary">Создать тест</button>
+        <a th:href="@{/create-test}" class="btn btn-primary">Создать тест</a>
       </div>
       <div class="col-sm-3 mb-1" th:each="test: ${tests}">
         <div class="card">
