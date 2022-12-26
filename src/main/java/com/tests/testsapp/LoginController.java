@@ -1,17 +1,13 @@
 package com.tests.testsapp;
 
-import com.tests.testsapp.entities.OneAnswerQuestion;
+import com.tests.testsapp.entities.Questions.OneAnswerQuestion;
 import com.tests.testsapp.entities.Question;
 import com.tests.testsapp.repos.QuestionRepository;
 import com.tests.testsapp.services.AppUserDetailService;
-import com.tests.testsapp.services.AppUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.BeanIds;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -46,8 +41,7 @@ public class LoginController {
         question.setTemplatePath("sdsds");
         question.setAnswerContent("dsds");
         question.setQuestionText("dsdsdsdsds");
-        question.setType("dsds");
-        questionRepository.save((Question)question);
+
         if (isAuthenticated()) {
             return "redirect:home";
         }

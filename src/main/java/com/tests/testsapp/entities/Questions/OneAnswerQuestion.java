@@ -1,12 +1,16 @@
-package com.tests.testsapp.entities;
+package com.tests.testsapp.entities.Questions;
 
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.tests.testsapp.entities.Question;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import javax.persistence.Entity;
 import javax.persistence.PersistenceUnit;
 import javax.persistence.Transient;
+import javax.print.Doc;
 import java.util.List;
 
 @Entity
@@ -20,10 +24,24 @@ public class OneAnswerQuestion extends Question {
     @Transient
     private int correctOption;
 
+    public OneAnswerQuestion() {
+        super();
+    }
+    public OneAnswerQuestion(String a) {
+        super();
+    }
     @Override
     public boolean check(String answer){
 
         return false;
+    }
+
+    @Override
+    public boolean serialize(String html){
+        Document answersHtml = Jsoup.parse(html);
+        String answer = answersHtml.getElementsByTag("input").get(0).val();
+        this.setAnswerContent(answer);
+        return true;
     }
 
     @Override

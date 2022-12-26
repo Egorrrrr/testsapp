@@ -17,16 +17,17 @@ public abstract class Question {
     @Transient
     private String constructorPath;
     private String answerContent;
-    private String type;
+
 
     @ManyToMany
     Set<Question> tests;
-
+    public Question(String filler){}
+    public Question() {}
     public void setPath(){}
     public void setConst(){}
     public boolean check(String answer){return false;}
 
-    public boolean writeToDb(String question) {return false;}
+    public boolean serialize(String question) {return false;}
 
     @Transient
     public String getConstructorPath() {
@@ -71,11 +72,5 @@ public abstract class Question {
         this.answerContent = answerContent;
     }
 
-    public String getType() {
-        return type;
-    }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 }
