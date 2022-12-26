@@ -3,9 +3,11 @@ package com.tests.testsapp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tests.testsapp.entities.Question;
+import com.tests.testsapp.entities.Test;
 import com.tests.testsapp.entities.json.RawQuestion;
 import com.tests.testsapp.entities.json.RawTest;
 import com.tests.testsapp.repos.QuestionRepository;
+import com.tests.testsapp.repos.TestRepository;
 import com.tests.testsapp.services.AppUserDetailService;
 import com.tests.testsapp.services.AppUserDetails;
 import com.tests.testsapp.services.ClassAccessorService;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +39,8 @@ public class HomePageController {
     ClassAccessorService classAccessorService;
     @Autowired
     public QuestionRepository questionRepository;
+    @Autowired
+    public TestRepository testRepository;
     ObjectMapper objectMapper = new ObjectMapper();
     @GetMapping("/home")
     public String home(Model model){
@@ -88,6 +93,9 @@ public class HomePageController {
         RawTest test = objectMapper.readValue(httpEntity.getBody(), RawTest.class);
         Set<Class> classes = classAccessorService.findAllClassesUsingClassLoader(
                 "com.tests.testsapp.entities.Questions");
+        Test cookedTest = new Test();
+        cookedTest.setName(test.getName());
+        cookedTest.setLinkedQuestions(new HashSet<>());
         for (RawQuestion question: test.getQuestions()
              ) {
             for (Class cl: classes
@@ -96,10 +104,13 @@ public class HomePageController {
                     Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
                     question_class.setQuestionText(question.getqContent());
                     question_class.serialize(question.getAnswers());
-                    questionRepository.save(question_class);
+                    question_class = questionRepository.save(question_class);
+                    cookedTest.getLinkedQuestions().add(question_class);
+
                 }
             }
         }
+        testRepository.save(cookedTest);
         return "fragments/q1";
     }
 
