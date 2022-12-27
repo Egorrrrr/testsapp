@@ -36,7 +36,7 @@
               </div>
               <div>
                 <label class="form-label m-0">Тип вопроса</label>
-                <select class="form-control" onchange="selectType(this)" name="typeSelector">
+                <select class="form-control" onchange="selectType(this)" name="typeSelector" id="selectType">
                   <option th:each="type: ${questionTypes}" th:utext="${type.label}" th:value="${type.value}">
 
                   </option>
@@ -51,6 +51,9 @@
   </div>
 </div>
 <script>
+  document.addEventListener("DOMContentLoaded", () => {
+    selectType(document.getElementById('selectType'))
+  });
   document.getElementById('addQuestion').onclick = (e) => {
     e.preventDefault()
     document.getElementById("allQuestions").appendChild(
@@ -79,9 +82,8 @@
         'Content-Type': 'application/json'
       },
     }).then(response => {
-      return response.text()
+      window.location.href="home";
     })
-    console.log(test)
   }
   const selectType = (e) => {
     fetch('/getType', {

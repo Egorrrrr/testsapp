@@ -3,11 +3,16 @@ package com.tests.testsapp;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.tests.testsapp.entities.Question;
+import com.tests.testsapp.entities.Statistic;
 import com.tests.testsapp.entities.Test;
+import com.tests.testsapp.entities.User;
+import com.tests.testsapp.entities.json.RawAnswers;
 import com.tests.testsapp.entities.json.RawQuestion;
 import com.tests.testsapp.entities.json.RawTest;
 import com.tests.testsapp.repos.QuestionRepository;
+import com.tests.testsapp.repos.StatisticRepository;
 import com.tests.testsapp.repos.TestRepository;
+import com.tests.testsapp.repos.UserRepository;
 import com.tests.testsapp.services.AppUserDetailService;
 import com.tests.testsapp.services.AppUserDetails;
 import com.tests.testsapp.services.ClassAccessorService;
@@ -16,17 +21,18 @@ import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.desktop.QuitEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 public class HomePageController {
@@ -41,14 +47,20 @@ public class HomePageController {
     public QuestionRepository questionRepository;
     @Autowired
     public TestRepository testRepository;
+    @Autowired
+    public UserRepository userRepository;
+    @Autowired
+    public StatisticRepository statisticRepository;
     ObjectMapper objectMapper = new ObjectMapper();
     @GetMapping("/home")
     public String home(Model model){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((AppUserDetails)principal).getUsername();
         String role = ((AppUserDetails)principal).getAuthorities().toArray()[0].toString();
+        List<Test> testList = testRepository.findAll();
         model.addAttribute("name", username);
         model.addAttribute("role", role);
+        model.addAttribute("tests", testList);
         return "home";
     }
 
@@ -62,15 +74,33 @@ public class HomePageController {
         return "403";
     }
 
+    @GetMapping("/test")
+    public String getTest(@RequestParam String id, Model model){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((AppUserDetails)principal).getUsername();
+        List<Question> questions = questionRepository.findQuestionsByTestId(Long.parseLong(id));
+
+        model.addAttribute("username", username);
+        model.addAttribute("tests", questions);
+        return "test";
+    }
+
     @GetMapping("/create-test")
-    public String createTest(Model model){
+    public String createTest(Model model) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String role = ((AppUserDetails)principal).getAuthorities().toArray()[0].toString();
+        if(!role.equals("admin") ){
+            return "";
 
-
+        }
+        Set<Class> classes = classAccessorService.findAllClassesUsingClassLoader(
+                "com.tests.testsapp.entities.Questions");
         List<LabelValue> questionTypes = new ArrayList<>();
-        questionTypes.add(new LabelValue("q1", "RAX"));
-        questionTypes.add(new LabelValue("q2", "OneAnswerQuestion"));
-        questionTypes.add(new LabelValue("q3", "NEW"));
-
+        for (Class cl: classes
+             ) {
+            Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+            questionTypes.add(new LabelValue(question_class.getConstructorPath(), question_class.getQuestionName()));
+        }
         model.addAttribute("questionTypes", questionTypes);
         return "create-test";
     }
@@ -95,25 +125,52 @@ public class HomePageController {
                 "com.tests.testsapp.entities.Questions");
         Test cookedTest = new Test();
         cookedTest.setName(test.getName());
-        cookedTest.setLinkedQuestions(new HashSet<>());
+        cookedTest = testRepository.save(cookedTest);
         for (RawQuestion question: test.getQuestions()
              ) {
             for (Class cl: classes
                  ) {
-                if(cl.getName().contains(question.getType())){
-                    Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+                Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+                if(question_class.getQuestionName().equals(question.getType())){
                     question_class.setQuestionText(question.getqContent());
                     question_class.serialize(question.getAnswers());
+                    question_class.setTestId(cookedTest.getId());
                     question_class = questionRepository.save(question_class);
-                    cookedTest.getLinkedQuestions().add(question_class);
 
                 }
             }
         }
-        testRepository.save(cookedTest);
-        return "fragments/q1";
-    }
 
+        return "redirect:home";
+    }
+    @PostMapping("/end-test")
+    public String endTest(HttpEntity<String> httpEntity) throws JsonProcessingException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user =  userRepository.findByUsername(((AppUserDetails)principal).getUsername());
+        RawAnswers test = objectMapper.readValue(httpEntity.getBody(), RawAnswers.class);
+        List<Question> questions = questionRepository.findQuestionsByTestId((long)test.getId());
+        int correctCount = 0;
+        for (int i = 0; i<questions.size(); i++){
+            Question question = questions.get(i);
+            if(question.check(test.getAnswers().get(i))) {
+                correctCount++;
+            }
+
+        }
+        Statistic statistic = new Statistic();
+        statistic.setUserId(user.getId());
+        statistic.setTestId((long)test.getId());
+        statistic.setSolvedCorrect(correctCount);
+        statistic.setTotalQuestions(questions.size());
+        statistic.setTimestamp(new Date());
+        statisticRepository.save(statistic);
+        user.getStats().add(statistic);
+        Test testToWrite = testRepository.findTestById((long)test.getId());
+        testToWrite.getStats().add(statistic);
+        testRepository.save(testToWrite);
+        userRepository.save(user);
+        return "create-test";
+    }
     private class LabelValue {
         public LabelValue(String value, String label) {
             this.value = value;

@@ -2,6 +2,7 @@ package com.tests.testsapp.entities;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -10,9 +11,13 @@ public class Test {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String Name;
-    @ManyToMany
-    Set<Question> linkedQuestions;
+    private String name;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Statistic> stats = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -23,18 +28,18 @@ public class Test {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
-    public Set<Question> getLinkedQuestions() {
-        return linkedQuestions;
+    public List<Statistic> getStats() {
+        return stats;
     }
 
-    public void setLinkedQuestions(Set<Question> linkedQuestions) {
-        this.linkedQuestions = linkedQuestions;
+    public void setStats(List<Statistic> stats) {
+        this.stats = stats;
     }
 }
