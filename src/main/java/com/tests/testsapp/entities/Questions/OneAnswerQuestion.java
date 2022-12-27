@@ -45,8 +45,9 @@ public class OneAnswerQuestion extends Question {
     }
     @Override
     public boolean check(String answer){
-
-        return false;
+        Document answersHtml = Jsoup.parse(answer);
+        String user_answer = answersHtml.getElementsByTag("input").get(0).val();
+        return user_answer.equals(this.getAnswerContent());
     }
 
     @Override

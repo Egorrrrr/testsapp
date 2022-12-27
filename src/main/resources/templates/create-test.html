@@ -82,9 +82,8 @@
         'Content-Type': 'application/json'
       },
     }).then(response => {
-      return response.text()
+      window.location.href="home";
     })
-    console.log(test)
   }
   const selectType = (e) => {
     fetch('/getType', {

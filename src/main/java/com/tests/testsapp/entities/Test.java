@@ -2,6 +2,8 @@ package com.tests.testsapp.entities;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -10,6 +12,12 @@ public class Test {
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Statistic> stats = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -27,5 +35,11 @@ public class Test {
         this.name = name;
     }
 
+    public List<Statistic> getStats() {
+        return stats;
+    }
 
+    public void setStats(List<Statistic> stats) {
+        this.stats = stats;
+    }
 }

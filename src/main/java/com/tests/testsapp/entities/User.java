@@ -1,10 +1,9 @@
 package com.tests.testsapp.entities;
 
-import javax.persistence.Id;
+import javax.persistence.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class User {
@@ -25,6 +24,11 @@ public class User {
                 '}';
     }
 
+    @OneToMany(
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Statistic> stats = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -58,5 +62,11 @@ public class User {
         this.role = role;
     }
 
+    public List<Statistic> getStats() {
+        return stats;
+    }
 
+    public void setStats(List<Statistic> stats) {
+        this.stats = stats;
+    }
 }
