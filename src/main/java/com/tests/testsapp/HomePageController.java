@@ -123,8 +123,8 @@ public class HomePageController {
                 if(question_class.getQuestionName().equals(question.getType())){
                     question_class.setQuestionText(question.getqContent());
                     question_class.serialize(question.getAnswers());
-                    question_class = questionRepository.save(question_class);
                     question_class.setTestId(cookedTest.getId());
+                    question_class = questionRepository.save(question_class);
 
                 }
             }
