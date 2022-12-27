@@ -22,7 +22,7 @@
     <div class="container py-2 row m-0">
       <div class="w-100 d-flex flex-column align-items-center" style="gap:10px">
         <div th:each="test: ${tests}" class="card w-75 d-flex flex-column justify-content-center p-3" style="gap:10px">
-          <h5 th:text="${test.text}"></h5>
+          <h5 th:text="${test.questionText}"></h5>
           <div th:insert="${test.templatePath}">
           </div>
         </div>

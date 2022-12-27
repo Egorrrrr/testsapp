@@ -1,9 +1,12 @@
 package com.tests.testsapp.repos;
 
 import com.tests.testsapp.entities.Question;
-import com.tests.testsapp.entities.Test;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 public interface QuestionRepository extends JpaRepository<Question, Long> {
-    Test findQuestionById(Long id);
+    Question findQuestionById(Long id);
+    List<Question> findQuestionsByTestId(Long id);
+
 }

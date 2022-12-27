@@ -25,7 +25,7 @@
             <div class="col-sm-3 m-0 mb-1" th:each="test: ${tests}">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title" th:utext="test.name"></h5>
+                        <h5 class="card-title" th:utext="${test.name}"></h5>
                         <a class="btn btn-primary" th:href="@{'/test'(id=${test.id})}">Начать</a>
                     </div>
                 </div>

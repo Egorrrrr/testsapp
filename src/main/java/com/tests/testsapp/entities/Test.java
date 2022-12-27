@@ -2,7 +2,6 @@ package com.tests.testsapp.entities;
 
 
 import javax.persistence.*;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -10,9 +9,7 @@ public class Test {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
-    private String Name;
-    @ManyToMany
-    Set<Question> linkedQuestions;
+    private String name;
 
     public Long getId() {
         return id;
@@ -23,18 +20,12 @@ public class Test {
     }
 
     public String getName() {
-        return Name;
+        return name;
     }
 
     public void setName(String name) {
-        Name = name;
+        this.name = name;
     }
 
-    public Set<Question> getLinkedQuestions() {
-        return linkedQuestions;
-    }
 
-    public void setLinkedQuestions(Set<Question> linkedQuestions) {
-        this.linkedQuestions = linkedQuestions;
-    }
 }

@@ -16,15 +16,19 @@ public abstract class Question {
     private String templatePath;
     @Transient
     private String constructorPath;
+    @Transient
+    private String questionName;
     private String answerContent;
+    private Long testId;
 
 
-    @ManyToMany
-    Set<Question> tests;
     public Question(String filler){}
     public Question() {}
-    public void setPath(){}
-    public void setConst(){}
+
+    public void setQuestName(){}
+    public void setTemplatePath(){}
+    public void setConstPath(){}
+
     public boolean check(String answer){return false;}
 
     public boolean serialize(String question) {return false;}
@@ -72,5 +76,19 @@ public abstract class Question {
         this.answerContent = answerContent;
     }
 
+    public String getQuestionName() {
+        return questionName;
+    }
 
+    public void setQuestionName(String questionName) {
+        this.questionName = questionName;
+    }
+
+    public Long getTestId() {
+        return testId;
+    }
+
+    public void setTestId(Long testId) {
+        this.testId = testId;
+    }
 }

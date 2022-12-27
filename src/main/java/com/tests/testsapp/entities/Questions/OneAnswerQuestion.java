@@ -17,18 +17,31 @@ import java.util.List;
 public class OneAnswerQuestion extends Question {
     @Transient
     public final String QUESTION_NAME = "Вопрос с одним выбором";
+
     @Transient
-    public final String TEMPLATE_PATH = "path";
+    public final String TEMPLATE_PATH = "fragments/q1";
+
     @Transient
-    public final String CONSTRUCTOR_PATH = "path";
+    public final String CONSTRUCTOR_PATH = "q1";
+
+
     @Transient
     private int correctOption;
 
     public OneAnswerQuestion() {
         super();
+        setTemplatePath(TEMPLATE_PATH);
+        setConstructorPath(CONSTRUCTOR_PATH);
+        setQuestionName(QUESTION_NAME);
     }
+
     public OneAnswerQuestion(String a) {
         super();
+        setTemplatePath(TEMPLATE_PATH);
+        setConstructorPath(CONSTRUCTOR_PATH);
+        setQuestionName(QUESTION_NAME);
+
+
     }
     @Override
     public boolean check(String answer){
@@ -44,13 +57,5 @@ public class OneAnswerQuestion extends Question {
         return true;
     }
 
-    @Override
-    public void setPath(){
-        setTemplatePath(TEMPLATE_PATH);
-    }
 
-    @Override
-    public void setConst() {
-        setConstructorPath(CONSTRUCTOR_PATH);
-    }
 }

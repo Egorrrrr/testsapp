@@ -47,8 +47,10 @@ public class HomePageController {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((AppUserDetails)principal).getUsername();
         String role = ((AppUserDetails)principal).getAuthorities().toArray()[0].toString();
+        List<Test> testList = testRepository.findAll();
         model.addAttribute("name", username);
         model.addAttribute("role", role);
+        model.addAttribute("tests", testList);
         return "home";
     }
 
@@ -62,15 +64,32 @@ public class HomePageController {
         return "403";
     }
 
+    @GetMapping("/test")
+    public String getTest(@RequestParam String id, Model model){
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((AppUserDetails)principal).getUsername();
+        List<Question> questions = questionRepository.findQuestionsByTestId(Long.parseLong(id));
+
+        model.addAttribute("username", username);
+        model.addAttribute("tests", questions);
+        return "test";
+    }
+
     @GetMapping("/create-test")
-    public String createTest(Model model){
-
-
+    public String createTest(Model model) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String role = ((AppUserDetails)principal).getAuthorities().toArray()[0].toString();
+        if(!role.equals("admin") ){
+            return "403";
+        }
+        Set<Class> classes = classAccessorService.findAllClassesUsingClassLoader(
+                "com.tests.testsapp.entities.Questions");
         List<LabelValue> questionTypes = new ArrayList<>();
-        questionTypes.add(new LabelValue("q1", "RAX"));
-        questionTypes.add(new LabelValue("q2", "OneAnswerQuestion"));
-        questionTypes.add(new LabelValue("q3", "NEW"));
-
+        for (Class cl: classes
+             ) {
+            Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+            questionTypes.add(new LabelValue(question_class.getConstructorPath(), question_class.getQuestionName()));
+        }
         model.addAttribute("questionTypes", questionTypes);
         return "create-test";
     }
@@ -95,22 +114,22 @@ public class HomePageController {
                 "com.tests.testsapp.entities.Questions");
         Test cookedTest = new Test();
         cookedTest.setName(test.getName());
-        cookedTest.setLinkedQuestions(new HashSet<>());
+        cookedTest = testRepository.save(cookedTest);
         for (RawQuestion question: test.getQuestions()
              ) {
             for (Class cl: classes
                  ) {
-                if(cl.getName().contains(question.getType())){
-                    Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+                Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+                if(question_class.getQuestionName().equals(question.getType())){
                     question_class.setQuestionText(question.getqContent());
                     question_class.serialize(question.getAnswers());
                     question_class = questionRepository.save(question_class);
-                    cookedTest.getLinkedQuestions().add(question_class);
+                    question_class.setTestId(cookedTest.getId());
 
                 }
             }
         }
-        testRepository.save(cookedTest);
+
         return "fragments/q1";
     }
 
