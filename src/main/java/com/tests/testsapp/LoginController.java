@@ -1,7 +1,5 @@
 package com.tests.testsapp;
 
-import com.tests.testsapp.entities.Questions.OneAnswerQuestion;
-import com.tests.testsapp.entities.Question;
 import com.tests.testsapp.repos.QuestionRepository;
 import com.tests.testsapp.services.AppUserDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,11 +34,6 @@ public class LoginController {
 
     @GetMapping(value = {"/", "/login"})
     public String index(Model model) {
-        OneAnswerQuestion question =new OneAnswerQuestion();
-        question.setConstructorPath("sdsad");
-        question.setTemplatePath("sdsds");
-        question.setAnswerContent("dsds");
-        question.setQuestionText("dsdsdsdsds");
 
         if (isAuthenticated()) {
             return "redirect:home";
