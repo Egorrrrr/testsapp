@@ -20,7 +20,6 @@ public class ClassAccessorService {
     public List<Class> listClasses = new ArrayList<>();
     public List<Class> getAllClasses(String path) throws IOException {
         File folder = new File(path);
-        List<Class> list = new ArrayList<>();
         for (final File fileEntry : folder.listFiles()) {
                 System.out.println(fileEntry.getName());
                 if(classes.contains(fileEntry.getAbsolutePath())){

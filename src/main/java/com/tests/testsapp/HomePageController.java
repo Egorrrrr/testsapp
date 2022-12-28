@@ -99,7 +99,7 @@ public class HomePageController {
 
         }
         List<LabelValue> questionTypes = new ArrayList<>();
-        for (Class cl: classAccessorService.getAllClasses("D:/testsapp/classes")
+        for (Class cl: classAccessorService.getAllClasses("plugins")
              ) {
             Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
             questionTypes.add(new LabelValue(question_class.getConstructorPath(), question_class.getQuestionName()));
@@ -120,7 +120,7 @@ public class HomePageController {
     @RequestMapping(value = "/getType", method = RequestMethod.POST)
     public String getType(HttpEntity<String> httpEntity) throws JSONException, IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String type = new JSONObject(httpEntity.getBody()).getString("type");
-        for (Class cl: classAccessorService.getAllClasses("D:/testsapp/classes")
+        for (Class cl: classAccessorService.getAllClasses("plugins")
              ) {
             Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
             if(question_class.getQuestionName().equals(type)){
@@ -134,7 +134,7 @@ public class HomePageController {
     public String sendTest(HttpEntity<String> httpEntity) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         RawTest test = objectMapper.readValue(httpEntity.getBody(), RawTest.class);
-        List<Class> classes = classAccessorService.getAllClasses("D:/testsapp/classes");
+        List<Class> classes = classAccessorService.getAllClasses("plugins");
         Test cookedTest = new Test();
         cookedTest.setName(test.getName());
         cookedTest = testRepository.save(cookedTest);

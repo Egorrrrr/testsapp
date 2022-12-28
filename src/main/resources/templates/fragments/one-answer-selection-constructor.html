@@ -2,7 +2,7 @@
   <span class="m-0" style="align-self: start">Конструктор</span>
   <div id="allAnswers" class="d-flex flex-column w-100" style="gap: 10px">
     <div id="newAnswer" class="d-flex align-items-center" style="gap: 10px">
-      <input class="form-check-input" type="checkbox" name="trueAnswer">
+      <input class="form-check-input" type="checkbox" name="trueAnswer" onclick="this.setAttribute('checked', this.checked)">
       <input type="text" class="form-control" placeholder="Текст ответа" name="answerText" onkeyup="changeRadioValue(this)">
       <button class="btn btn-danger" onclick="deleteVar(this)">-</button>
     </div>
