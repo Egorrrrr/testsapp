@@ -1,13 +1,12 @@
 package com.tests.testsapp.entities;
 
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public abstract class Question {
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long id;
@@ -25,9 +24,7 @@ public abstract class Question {
     public Question(String filler){}
     public Question() {}
 
-    public void setQuestName(){}
-    public void setTemplatePath(){}
-    public void setConstPath(){}
+
 
     public boolean check(String answer){return false;}
 

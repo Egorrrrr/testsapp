@@ -9,6 +9,7 @@ import com.tests.testsapp.entities.User;
 import com.tests.testsapp.entities.json.RawAnswers;
 import com.tests.testsapp.entities.json.RawQuestion;
 import com.tests.testsapp.entities.json.RawTest;
+import com.tests.testsapp.joor.Reflect;
 import com.tests.testsapp.repos.QuestionRepository;
 import com.tests.testsapp.repos.StatisticRepository;
 import com.tests.testsapp.repos.TestRepository;
@@ -16,6 +17,8 @@ import com.tests.testsapp.repos.UserRepository;
 import com.tests.testsapp.services.AppUserDetailService;
 import com.tests.testsapp.services.AppUserDetails;
 import com.tests.testsapp.services.ClassAccessorService;
+import net.bytebuddy.dynamic.scaffold.MethodGraph;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,7 +30,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.awt.desktop.QuitEvent;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 @Controller
@@ -48,6 +56,7 @@ public class HomePageController {
     @Autowired
     public StatisticRepository statisticRepository;
     ObjectMapper objectMapper = new ObjectMapper();
+    Set<Class> classes =new HashSet<>();
     @GetMapping("/home")
     public String home(Model model){
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -82,21 +91,23 @@ public class HomePageController {
     }
 
     @GetMapping("/create-test")
-    public String createTest(Model model) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public String createTest(Model model) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException, IOException, ClassNotFoundException {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String role = ((AppUserDetails)principal).getAuthorities().toArray()[0].toString();
         if(!role.equals("admin") ){
             return "";
 
         }
-        Set<Class> classes = classAccessorService.findAllClassesUsingClassLoader(
-                "com.tests.testsapp.entities.Questions");
         List<LabelValue> questionTypes = new ArrayList<>();
-        for (Class cl: classes
+        for (Class cl: classAccessorService.getAllClasses("D:/testsapp/classes")
              ) {
             Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
             questionTypes.add(new LabelValue(question_class.getConstructorPath(), question_class.getQuestionName()));
         }
+
+
+
+
         model.addAttribute("questionTypes", questionTypes);
         return "create-test";
     }
@@ -107,18 +118,23 @@ public class HomePageController {
     }
 
     @RequestMapping(value = "/getType", method = RequestMethod.POST)
-    public String getType(HttpEntity<String> httpEntity) throws JSONException {
+    public String getType(HttpEntity<String> httpEntity) throws JSONException, IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         String type = new JSONObject(httpEntity.getBody()).getString("type");
-
-        return "fragments/one-answer";
+        for (Class cl: classAccessorService.getAllClasses("D:/testsapp/classes")
+             ) {
+            Question question_class = (Question) cl.getConstructor(String.class).newInstance("");
+            if(question_class.getQuestionName().equals(type)){
+                return question_class.getConstructorPath();
+            }
+        }
+        return "";
     }
 
     @PostMapping(value = "/sendTest")
-    public String sendTest(HttpEntity<String> httpEntity) throws JsonProcessingException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public String sendTest(HttpEntity<String> httpEntity) throws IOException, NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 
         RawTest test = objectMapper.readValue(httpEntity.getBody(), RawTest.class);
-        Set<Class> classes = classAccessorService.findAllClassesUsingClassLoader(
-                "com.tests.testsapp.entities.Questions");
+        List<Class> classes = classAccessorService.getAllClasses("D:/testsapp/classes");
         Test cookedTest = new Test();
         cookedTest.setName(test.getName());
         cookedTest = testRepository.save(cookedTest);

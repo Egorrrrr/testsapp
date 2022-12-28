@@ -1,34 +1,41 @@
 package com.tests.testsapp.services;
 
+import com.tests.testsapp.entities.Question;
+import com.tests.testsapp.joor.Reflect;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class ClassAccessorService {
 
-    public Set<Class> findAllClassesUsingClassLoader(String packageName) {
-        InputStream stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(packageName.replaceAll("[.]", "/"));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
-        return reader.lines()
-                .filter(line -> line.endsWith(".class"))
-                .map(line -> getClass(line, packageName))
-                .collect(Collectors.toSet());
-    }
+    public Set<String> classes = new HashSet<>();
+    public List<Class> listClasses = new ArrayList<>();
+    public List<Class> getAllClasses(String path) throws IOException {
+        File folder = new File(path);
+        List<Class> list = new ArrayList<>();
+        for (final File fileEntry : folder.listFiles()) {
+                System.out.println(fileEntry.getName());
+                if(classes.contains(fileEntry.getAbsolutePath())){
+                    continue;
+                }
+                else {
+                    classes.add(fileEntry.getAbsolutePath());
+                }
+                String java = Files.readString(Path.of(fileEntry.getAbsolutePath()));
+                String name = fileEntry.getName().replaceAll(".java", "");
+                Class aClass = Reflect.compile("com.tests.testsapp.entities.questions."+name, java, Question.class.getClassLoader()).get();
+                listClasses.add(aClass);
 
-    private Class getClass(String className, String packageName) {
-        try {
-            return Class.forName(packageName + "."
-                    + className.substring(0, className.lastIndexOf('.')));
-        } catch (ClassNotFoundException e) {
-            // handle the exception
         }
-        return null;
+        return listClasses;
     }
 
 }
