@@ -1,0 +1,28 @@
+<div th:fragment="one-answer-selection-constructor" class="d-flex flex-column align-items-center" style="gap: 10px">
+  <span class="m-0" style="align-self: start">Конструктор</span>
+  <div id="allAnswers" class="d-flex flex-column w-100" style="gap: 10px">
+    <div id="newAnswer" class="d-flex align-items-center" style="gap: 10px">
+      <input class="form-check-input" type="radio" name="trueAnswer">
+      <input type="text" class="form-control" placeholder="Текст ответа" name="answerText" onkeyup="changeRadioValue(this)">
+      <button class="btn btn-danger" onclick="deleteVar(event, this)">-</button>
+    </div>
+  </div>
+  <button class="btn btn-primary" id="addAnswer">+</button>
+  <script>
+    document.getElementById('addAnswer').onclick = e => {
+      e.preventDefault()
+      document.getElementById("allAnswers").appendChild(
+        document.getElementById("newAnswer").cloneNode(true)
+      )
+    }
+
+    function deleteVar(e, el) {
+      event.preventDefault()
+      el.parentNode.remove()
+    }
+
+    function changeRadioValue(element) {
+      element.parentNode.firstElementChild.value = element.value
+    }
+  </script>
+</div>

@@ -19,10 +19,10 @@ public class OneAnswerQuestion extends Question {
     public final String QUESTION_NAME = "Вопрос с одним выбором";
 
     @Transient
-    public final String TEMPLATE_PATH = "fragments/q1";
+    public final String TEMPLATE_PATH = "fragments/one-answer";
 
     @Transient
-    public final String CONSTRUCTOR_PATH = "q1";
+    public final String CONSTRUCTOR_PATH = "fragments/one-answer";
 
 
     @Transient

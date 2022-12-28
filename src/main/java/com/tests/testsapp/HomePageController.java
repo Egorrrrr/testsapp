@@ -21,16 +21,12 @@ import org.json.JSONObject;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.awt.desktop.QuitEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
@@ -114,7 +110,7 @@ public class HomePageController {
     public String getType(HttpEntity<String> httpEntity) throws JSONException {
         String type = new JSONObject(httpEntity.getBody()).getString("type");
 
-        return "fragments/q1";
+        return "fragments/one-answer";
     }
 
     @PostMapping(value = "/sendTest")
